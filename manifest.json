@@ -1,0 +1,10 @@
+{
+  "id": "wx-open-chat",
+  "name": "WX Open Chat",
+  "version": "0.2.0",
+  "minAppVersion": "0.15.0",
+  "description": "OpenClaw agent sidebar for Obsidian with optional Telegram topic linking.",
+  "author": "WhiteX + WX",
+  "authorUrl": "https://whitex.design",
+  "isDesktopOnly": false
+}
