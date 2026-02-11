@@ -102,6 +102,22 @@
   color: var(--text-faint);
 }
 
+.wx-chat-copy-btn {
+  margin-left: auto;
+  border: 1px solid var(--background-modifier-border);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 8px;
+  font-size: 11px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.wx-chat-copy-btn:hover {
+  color: var(--text-normal);
+  border-color: var(--interactive-accent);
+}
+
 .wx-chat-msg-content {
   line-height: 1.5;
   user-select: text;

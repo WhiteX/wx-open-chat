@@ -106,9 +106,15 @@ export class WXChatView extends ItemView {
       head.createDiv({ cls: 'wx-chat-msg-time', text: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
 
       const { visibleText, systemText } = splitSystemLines(m.content)
+      const copySource = visibleText || m.content
+
+      if (m.role === 'assistant') {
+        const copyBtn = head.createEl('button', { text: 'Copy', cls: 'wx-chat-copy-btn' })
+        copyBtn.addEventListener('click', () => void this.copyMessage(copySource))
+      }
 
       const body = row.createDiv({ cls: 'wx-chat-msg-content' })
-      void MarkdownRenderer.renderMarkdown(visibleText || m.content, body, '', this.plugin)
+      void MarkdownRenderer.renderMarkdown(copySource, body, '', this.plugin)
 
       if (systemText) {
         const details = row.createEl('details', { cls: 'wx-chat-system-details' })
@@ -164,6 +170,15 @@ export class WXChatView extends ItemView {
       this.messages.push({ role: 'assistant', content: `Error: ${msg}` })
       this.render()
       new Notice(`WX Open Chat error: ${msg}`)
+    }
+  }
+
+  private async copyMessage(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text)
+      new Notice('Copied message')
+    } catch {
+      new Notice('Copy failed (clipboard unavailable)')
     }
   }
 }
