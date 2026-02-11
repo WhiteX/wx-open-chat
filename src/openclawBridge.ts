@@ -55,5 +55,23 @@ export async function sendToBridge(params: {
   if (response.status >= 400) throw new Error(`Bridge error ${response.status}`)
 
   const data = response.json as { reply?: string; text?: string; message?: string }
-  return data.reply || data.text || data.message || '[No response from bridge]'
+  const reply = data.reply || data.text || data.message || '[No response from bridge]'
+  return normalizeEditAppliedPath(reply, vaultPath)
+}
+
+function normalizeEditAppliedPath(text: string, vaultPath?: string): string {
+  if (!vaultPath) return text
+
+  return text.replace(/EDIT_APPLIED:([^\n\r]+)/g, (_match, rawPath: string) => {
+    const trimmed = String(rawPath || '').trim()
+    const normalizedVault = vaultPath.replace(/\\/g, '/').replace(/\/$/, '')
+    const normalizedPath = trimmed.replace(/\\/g, '/')
+
+    if (normalizedPath.startsWith(normalizedVault + '/')) {
+      const rel = normalizedPath.slice(normalizedVault.length + 1)
+      return `EDIT_APPLIED:${rel}`
+    }
+
+    return `EDIT_APPLIED:${trimmed}`
+  })
 }

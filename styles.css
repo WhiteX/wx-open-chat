@@ -55,6 +55,8 @@
   flex-direction: column;
   gap: 10px;
   padding-right: 2px;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .wx-chat-empty {
@@ -102,6 +104,9 @@
 
 .wx-chat-msg-content {
   line-height: 1.5;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
 }
 
 .wx-chat-msg-content p {
