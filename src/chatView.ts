@@ -1,4 +1,4 @@
-import { ItemView, MarkdownView, Notice, WorkspaceLeaf } from 'obsidian'
+import { ItemView, MarkdownRenderer, MarkdownView, Notice, WorkspaceLeaf } from 'obsidian'
 import { sendToBridge, WXMessage } from './openclawBridge'
 import WXOpenChatPlugin from './main'
 
@@ -34,6 +34,23 @@ export class WXChatView extends ItemView {
     const wrap = contentEl.createDiv({ cls: 'wx-chat-wrap' })
     const top = wrap.createDiv({ cls: 'wx-chat-topbar' })
     top.createDiv({ text: 'WX Open Chat', cls: 'wx-chat-title' })
+
+    const topActions = top.createDiv({ cls: 'wx-chat-top-actions' })
+    const toggleNote = topActions.createEl('button', { text: 'Note ctx', cls: 'wx-chip-btn' })
+    const toggleSel = topActions.createEl('button', { text: 'Selection', cls: 'wx-chip-btn' })
+
+    toggleNote.addEventListener('click', async () => {
+      this.plugin.settings.includeActiveNoteContext = !this.plugin.settings.includeActiveNoteContext
+      await this.plugin.saveSettings()
+      this.render()
+    })
+
+    toggleSel.addEventListener('click', async () => {
+      this.plugin.settings.includeSelectionContext = !this.plugin.settings.includeSelectionContext
+      await this.plugin.saveSettings()
+      this.render()
+    })
+
     this.statusEl = top.createDiv({ cls: 'wx-chat-context-state' })
 
     this.messagesEl = wrap.createDiv({ cls: 'wx-chat-messages' })
@@ -66,6 +83,12 @@ export class WXChatView extends ItemView {
       }`
     )
 
+    const chips = this.contentEl.querySelectorAll('.wx-chip-btn')
+    if (chips.length >= 2) {
+      chips[0].classList.toggle('is-active', s.includeActiveNoteContext)
+      chips[1].classList.toggle('is-active', s.includeSelectionContext)
+    }
+
     this.messagesEl.empty()
     if (!this.messages.length) {
       this.messagesEl.createDiv({
@@ -77,8 +100,13 @@ export class WXChatView extends ItemView {
 
     for (const m of this.messages) {
       const row = this.messagesEl.createDiv({ cls: `wx-chat-msg wx-chat-msg-${m.role}` })
-      row.createDiv({ cls: 'wx-chat-msg-role', text: m.role === 'user' ? 'You' : 'WX' })
-      row.createDiv({ cls: 'wx-chat-msg-content', text: m.content })
+      const head = row.createDiv({ cls: 'wx-chat-msg-head' })
+      head.createDiv({ cls: 'wx-chat-msg-role', text: m.role === 'user' ? 'You' : 'WX' })
+      head.createDiv({ cls: 'wx-chat-msg-dot', text: '•' })
+      head.createDiv({ cls: 'wx-chat-msg-time', text: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+
+      const body = row.createDiv({ cls: 'wx-chat-msg-content' })
+      void MarkdownRenderer.renderMarkdown(m.content, body, '', this.plugin)
     }
 
     this.messagesEl.scrollTop = this.messagesEl.scrollHeight
