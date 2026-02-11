@@ -37,5 +37,14 @@ If Obsidian runs on Windows and bridge runs in WSL, use the WSL IP as Bridge URL
 ## Code provenance
 This project has a fresh repository history.
 
-Adapted code is currently used from:
-- `bramses/chatgpt-md`
+Adapted code currently used from `bramses/chatgpt-md` includes:
+- Obsidian plugin scaffolding/build baseline (manifest/esbuild/ts flow)
+- Parts of settings persistence patterns
+- Some utility/service structure patterns that were reused and simplified
+
+New / rewritten in WX Open Chat:
+- OpenClaw-first bridge integration (agent-only workflow)
+- Sidebar chat UX focused on editing notes
+- Optional Telegram topic linking mode (standalone default)
+- Context controls (active note + selection)
+- Bridge service scripts and cross-platform install flow
