@@ -78,9 +78,9 @@ export class WXChatView extends ItemView {
   private render(): void {
     const s = this.plugin.settings
     this.statusEl.setText(
-      `Link: ${s.linkMode === 'telegram-topic' ? 'Telegram' : 'Standalone'} • Context: ${
-        s.includeActiveNoteContext || s.includeSelectionContext ? 'ON' : 'OFF'
-      }`
+      `Vault: ${this.app.vault.getName()} • Link: ${
+        s.linkMode === 'telegram-topic' ? 'Telegram' : 'Standalone'
+      } • Context: ${s.includeActiveNoteContext || s.includeSelectionContext ? 'ON' : 'OFF'}`
     )
 
     const chips = this.contentEl.querySelectorAll('.wx-chip-btn')
@@ -105,8 +105,17 @@ export class WXChatView extends ItemView {
       head.createDiv({ cls: 'wx-chat-msg-dot', text: '•' })
       head.createDiv({ cls: 'wx-chat-msg-time', text: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
 
+      const { visibleText, systemText } = splitSystemLines(m.content)
+
       const body = row.createDiv({ cls: 'wx-chat-msg-content' })
-      void MarkdownRenderer.renderMarkdown(m.content, body, '', this.plugin)
+      void MarkdownRenderer.renderMarkdown(visibleText || m.content, body, '', this.plugin)
+
+      if (systemText) {
+        const details = row.createEl('details', { cls: 'wx-chat-system-details' })
+        details.createEl('summary', { text: 'System details' })
+        const pre = details.createEl('pre', { cls: 'wx-chat-system-pre' })
+        pre.setText(systemText)
+      }
     }
 
     this.messagesEl.scrollTop = this.messagesEl.scrollHeight
@@ -156,5 +165,24 @@ export class WXChatView extends ItemView {
       this.render()
       new Notice(`WX Open Chat error: ${msg}`)
     }
+  }
+}
+
+function splitSystemLines(text: string): { visibleText: string; systemText: string } {
+  const lines = text.split(/\r?\n/)
+  const system: string[] = []
+  const visible: string[] = []
+
+  for (const line of lines) {
+    if (/^(EDIT_APPLIED:|NO_EDIT\b|SYSTEM:)/.test(line.trim())) {
+      system.push(line)
+    } else {
+      visible.push(line)
+    }
+  }
+
+  return {
+    visibleText: visible.join('\n').trim(),
+    systemText: system.join('\n').trim(),
   }
 }

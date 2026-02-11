@@ -56,10 +56,10 @@ export async function sendToBridge(params: {
 
   const data = response.json as { reply?: string; text?: string; message?: string }
   const reply = data.reply || data.text || data.message || '[No response from bridge]'
-  return normalizeEditAppliedPath(reply, vaultPath)
+  return normalizeEditAppliedPath(reply, vaultPath, vaultName)
 }
 
-function normalizeEditAppliedPath(text: string, vaultPath?: string): string {
+function normalizeEditAppliedPath(text: string, vaultPath?: string, vaultName?: string): string {
   if (!vaultPath) return text
 
   return text.replace(/EDIT_APPLIED:([^\n\r]+)/g, (_match, rawPath: string) => {
@@ -69,9 +69,11 @@ function normalizeEditAppliedPath(text: string, vaultPath?: string): string {
 
     if (normalizedPath.startsWith(normalizedVault + '/')) {
       const rel = normalizedPath.slice(normalizedVault.length + 1)
-      return `EDIT_APPLIED:${rel}`
+      const prefixed = vaultName ? `${vaultName}/${rel}` : rel
+      return `EDIT_APPLIED:${prefixed}`
     }
 
-    return `EDIT_APPLIED:${trimmed}`
+    const fallback = vaultName ? `${vaultName}/${trimmed}` : trimmed
+    return `EDIT_APPLIED:${fallback}`
   })
 }
