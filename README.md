@@ -1,27 +1,29 @@
 # WX Open Chat
 
-OpenClaw-first sidebar chat plugin for Obsidian.
+WX Open Chat is an Obsidian sidebar plugin that connects your vault to an OpenClaw agent.
 
-## What it is
-- Agent-focused chat UI inside Obsidian
-- Built for asking questions and requesting real Markdown edits
-- Optional Telegram topic linking (feature mode)
-- Standalone mode by default (no channel IDs required)
+Use it to:
+- ask questions about your notes
+- request concrete Markdown edits
+- optionally link chats to a Telegram topic
 
-## What it is not
-- Not a generic multi-provider AI plugin
-- Not a prompt lab / model switcher
+Default mode is standalone (no channel IDs required).
 
 ## Install
 ```bash
 yarn install
-yarn build
 ./scripts/install-to-obsidian.sh
 ```
 
-Then enable **WX Open Chat** in Obsidian Community Plugins.
+The install script supports:
+1. CLI path argument: `./scripts/install-to-obsidian.sh /path/to/vault`
+2. `OBSIDIAN_VAULT_PATH` env var
+3. Auto-detection from Obsidian config
+4. Interactive prompt fallback
 
-## Bridge
+Then enable **WX Open Chat** in Obsidian → Community Plugins.
+
+## Bridge setup
 ```bash
 cd bridge
 cp .env.example .env
@@ -30,21 +32,10 @@ npm install
 ./scripts/bridge-service.sh status
 ```
 
-If Obsidian runs on Windows and bridge runs in WSL, use WSL IP in plugin Bridge URL.
+If Obsidian runs on Windows and bridge runs in WSL, use the WSL IP as Bridge URL in plugin settings.
 
-## Provenance
-This codebase was rebuilt as a **fresh project history** (new clean repository history).
+## Code provenance
+This project has a fresh repository history.
 
-Historical diff snapshot (before the fresh reset), compared against `bramses/chatgpt-md`:
-- Total tracked files: **140**
-- Files changed by us: **23**
-- Unchanged upstream files still present: **117**
-
-What that meant at the time:
-- We were still carrying a lot of inherited code from `chatgpt-md`
-- We had already added OpenClaw bridge + sidebar UI on top
-
-Current state:
-- Fresh-start repo with only the code we kept for WX Open Chat
-- Attribution retained for `bramses/chatgpt-md` where adapted logic is still used
-- Credits are kept only for code that is actually used
+Adapted code is currently used from:
+- `bramses/chatgpt-md`
