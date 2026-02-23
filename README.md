@@ -32,7 +32,10 @@ npm install
 ./scripts/bridge-service.sh status
 ```
 
-If Obsidian runs on Windows and bridge runs in WSL, use the WSL IP as Bridge URL in plugin settings.
+For a stable setup on Windows + WSL, prefer localhost in plugin settings:
+- Bridge URL: `http://127.0.0.1:8787/v1/chat`
+
+Then configure bridge auto-start at Windows logon (see `bridge/README.md` section: **Windows + WSL stable localhost setup**).
 
 ## Code provenance
 This project has a fresh repository history.

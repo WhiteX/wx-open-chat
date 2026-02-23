@@ -25,6 +25,32 @@ cd bridge
 ./scripts/bridge-service.sh logs
 ```
 
+## Windows + WSL stable localhost setup (recommended)
+Goal: keep Obsidian plugin URL permanently set to `http://127.0.0.1:8787/v1/chat`.
+
+### Plugin settings
+- Bridge URL: `http://127.0.0.1:8787/v1/chat`
+- Bridge token: value of `BRIDGE_TOKEN` from `bridge/.env`
+
+### One-time auto-start on Windows login
+Run this in **Windows PowerShell as Administrator**:
+
+```powershell
+schtasks /Create /F /SC ONLOGON /TN "WXOpenChatBridge" /TR "wsl.exe -d Ubuntu --cd /home/whitex/dev/github/wx-open-chat/bridge ./scripts/bridge-service.sh start"
+```
+
+Verify task:
+
+```powershell
+schtasks /Query /TN "WXOpenChatBridge"
+```
+
+### Quick health check (Windows)
+```powershell
+(Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:8787/healthz").Content
+```
+Expected: JSON with `"ok": true`.
+
 ## Modes
 1. **Echo mode** (`ECHO_MODE=true`)
    - Good for plugin smoke tests
